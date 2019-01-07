@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    pre {
+      margin: 0;
+      padding: 0;
+    }
+
+    .box {
+      width: 400px;
+      height: 300px;
+      background-color: #f1c963;
+      flex: 0 0 auto;
+      margin-left: 10px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .main {
+      width: 200px;
+      height: 100px;
+      line-height: 100px;
+      background-color: rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+
+    .main h3 {
+      color: #fff;
+    }
+
+    .a1 {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+    }
+
+    .a2.box {
+      display: table;
+    }
+
+    .a2.main {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .a3{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 100px;
+      margin-left: -100px;
+      margin-top: -50px;
+    }
+
+    .a4{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .a5.box{
+      display: flex;
+    }
+    .a5.main{
+      margin: auto;
+    }
+
+    .a6{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <pre>
+position: absolute;
+left: 0;
+right: 0;
+top: 0;
+bottom: 0;
+margin: auto;
+</pre>
+    <div class="a1 main">
+      <span>Am I Center Yet ?</span>
+    </div>
+  </div>
+  <div class="box a2">
+    <div class="a2 main">
+      <span>display: table; display: table-cell;</span>
+    </div>
+  </div>
+  <div class="box">
+      <div class="a3 main">
+          <span>Am I Center Yet ?</span>
+        </div>
+  </div>
+  <div class="box">
+      <div class="a4 main">
+          <span>Am I Center Yet ?</span>
+        </div>
+  </div>
+  <div class="a5 box">
+      <div class="a5 main">
+          <span>Am I Center Yet ?</span>
+        </div>
+  </div>
+  <div class="a6 box">
+      <div class="main">
+          <span>Am I Center Yet ?</span>
+        </div>
+  </div>
+</body>
+
+</html>
