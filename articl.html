@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  #app {
+    width: fit-content;
+    margin: 10px auto;
+    max-width: 500px;
+    box-shadow: 6px 6px 12px 7px #e1e1e1;
+    padding: 20px 50px;
+  }
+</style>
+
+<body>
+  <div id="app">
+    <title></title>
+    <div id="article">
+
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const number = window.location.search.slice(1).split('=')[1]
+    fetch("https://api.github.com/repos/navydong/notebook/issues/" + number).then(res => res.json())
+      .then(data => {
+        const title = data.title
+        const body = data.body
+        document.querySelector("title").innerText = title
+        document.querySelector("#article").innerHTML = marked(body)
+      })
+  </script>
+</body>
+
+</html>

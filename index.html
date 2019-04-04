@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #app {
+      width: fit-content;
+      margin: 10px auto;
+      box-shadow: 6px 6px 12px 7px #e1e1e1;
+      padding: 20px 50px;
+    }
+
+    .articleList {
+      overflow: hidden;
+    }
+
+    .listItem {
+      cursor: pointer;
+      white-space: nowrap;
+      word-break: break-all;
+      /* animation: move 3s linear infinite; */
+      min-width: 200px;
+    }
+
+    .listItem:hover {
+      color: #be8700;
+    }
+
+    .diffTime {
+      color: #b8b8b8;
+      font-size: 12px;
+    }
+
+    @keyframes move {
+
+      0%,
+      20% {
+        transform: translateX(0px);
+      }
+
+      80%,
+      100% {
+        transform: translateX(calc(-100% + 100px));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <ul class="articleList"></ul>
+  </div>
+  <script src="https://cdn.bootcss.com/dayjs/1.8.10/dayjs.min.js"></script>
+  <script>
+    const lisFragment = document.createDocumentFragment()
+    const articleList = document.querySelector('.articleList')
+    fetch("https://api.github.com/repos/navydong/notebook/issues", {
+      method: "GET"
+    }).then(res => res.json()).then(data => {
+      data.forEach(item => {
+        const title = item.title
+        const updateDate = dayjs(item.updated_at)
+        const today = dayjs()
+        const diff = today.diff(updateDate, "day") || "今"
+        const li = document.createElement('li')
+        li.classList.add("listItem")
+        li.innerHTML = `<span>${title}</span> <span class="diffTime">上次修改${diff}天前</span>`
+        const number = item.number
+        li.addEventListener("click", (e) => {
+          window.location.href = "./articl.html?n="+number
+        })
+        lisFragment.appendChild(li)
+      })
+      articleList.appendChild(lisFragment)
+    })
+  </script>
+</body>
+
+</html>
