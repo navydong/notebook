@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://cdn.bootcss.com/element-ui/2.7.2/theme-chalk/index.css" rel="stylesheet">
+  <style>
+    input[type=file] {
+      display: none;
+    }
+
+    .title {
+      color: green;
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 36px;
+      text-decoration: underline;
+    }
+
+    .buttonwrap {
+      padding: 20px;
+      text-align: center;
+      user-select: none;
+    }
+    .cellBox{
+      margin-top: 10px;
+      border: 1px dashed #ccc;
+      height: 50px;
+      line-height: 50px;
+      text-align: left;
+      padding: 0 50px;
+    }
+    .drag{
+      color: #ccc;
+      border: 1px solid #000;
+      background-color: #409EFF;
+    }
+    td{
+      cursor: pointer;
+    }
+  </style>
+  <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+  <script src="https://cdn.bootcss.com/element-ui/2.7.2/index.js"></script>
+  <script src="https://cdn.bootcss.com/xlsx/0.14.1/xlsx.full.min.js"></script>
+  <!-- https://www.imooc.com/article/42077 xlsx.js使用说明 -->
+</head>
+
+<body>
+  <div id="app">
+    <!-- <div class="title">资金调节表--RS0001 中国人寿保险传统产品 2018-9-4</div>
+    <el-table :data="tableData" style="width: 100%">
+      <el-table-column prop="a1" label="项目名称" align="center" width="160">
+      </el-table-column>
+      <el-table-column prop="a2" label="币种" align="center" width="50"></el-table-column>
+      <el-table-column prop="a3" label="昨日余额" align="center"></el-table-column>
+      <el-table-column label="今日流入" align="center">
+        <el-table-column prop="a41" label="金额" align="center"></el-table-column>
+        <el-table-column prop="a42" label="摘要" align="center"></el-table-column>
+        <el-table-column prop="a43" label="清算款" align="center"></el-table-column>
+      </el-table-column>
+      <el-table-column prop="a5" label="可用余额" align="center"></el-table-column>
+      <el-table-column label="今日流出" align="center">
+        <el-table-column prop="a61" label="金额" align="center"></el-table-column>
+        <el-table-column prop="a62" label="摘要" align="center"></el-table-column>
+        <el-table-column prop="a63" label="清算款" align="center"></el-table-column>
+        <el-table-column prop="a64" label="风险基金" align="center"></el-table-column>
+      </el-table-column>
+      <el-table-column prop="a7" label="今日余额" align="center"></el-table-column>
+    </el-table> -->
+
+    <div class="buttonwrap">
+      <el-upload class="upload" :on-change="handleChange" :file-list="fileList" :auto-upload="false">
+        <el-button size="small" type="primary">选择文件</el-button>
+      </el-upload>
+      <div class="cellBox" @dragenter="dragEnter" @drop="drop" @dragover="dragover">
+        <el-tag 
+        style="margin-left: 20px"
+        v-for="cell in cells" 
+        :key="cell.xy" 
+        @mouseover.native="tagmouseover(cell)" 
+        @mouseleave.native="tagmouseleave(cell)">
+        {{cell.text}}({{cell.xy}})
+      </el-tag>
+      </div>
+    </div>
+  </div>
+  <div id="table"></div>
+  <script>
+    new Vue({
+      data: {
+        tableData: [{
+          a1: "银行存款\\北京存款",
+          a2: "￥",
+          a3: "586,793,339.67",
+          a41: "7675754.45",
+          a42: "深交所备付金",
+          a43: "",
+          a5: "594469094.12",
+          a61: "66947869.36",
+          a62: "上交所备付金",
+          a63: "",
+          a64: "",
+          a7: "527,521,224.76"
+        }, {
+
+        }],
+        fileList: [],
+        cells: []
+      },
+      methods: {
+        submitUpload(file) {
+          const _this = this
+          this.readWorkbookFromLocalFile(file.raw, function (workbook) {
+            console.log(workbook)
+            const sheetNames = workbook.SheetNames
+            const sheets = workbook.Sheets
+            const worksheet = sheets[sheetNames[0]]
+            const html = XLSX.utils.sheet_to_html(worksheet)
+            const tablediv = document.querySelector("#table")
+            const reg = /<table>(.+)<\/table>/
+            const tableBody = html.match(reg)
+            const tablehtml = '<table class="table table-bordered" id="rTable">' + tableBody[1] + '</table>'
+            tablediv.innerHTML = tablehtml
+            const table = document.getElementById("rTable")
+            Array.prototype.forEach.call(table.rows, function(row){
+              Array.prototype.forEach.call(row.cells, function(cell){
+                cell.setAttribute("draggable", true)
+                cell.setAttribute("align", "center")
+                cell.addEventListener("dragstart", function(e){
+                  this.classList.add("drag")
+                  console.log(e.target)
+                  const cell = {
+                    text: e.target.textContent,
+                    xy: e.target.id.slice(4),
+                    id: e.target.id
+                  }
+                  e.dataTransfer.setData("cell", JSON.stringify(cell));
+                })
+                cell.addEventListener("dragend", function(e){
+                  this.classList.remove("drag")
+                })
+
+              })
+            })
+            table.addEventListener("click", function (e) {
+              const target = e.target
+              const Reg = /sjs-(\S+)/
+              const cellxy = Reg.exec(target.id)[1]
+              console.log(cellxy)
+              _this.$alert(`你点击了 --- ${cellxy}`, {
+                confirmButtonText: '确定'
+              });
+            })
+
+          })
+        },
+        handleChange(file, fileList) {
+          this.fileList = fileList.slice(-1)
+          this.submitUpload(file)
+        },
+        readWorkbookFromLocalFile(file, callback) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var data = e.target.result;
+            var workbook = XLSX.read(data, { type: 'binary' });
+            if (callback) callback(workbook);
+          };
+          reader.readAsBinaryString(file);
+        },
+        dragEnter(e){
+          // console.log(e)
+          // e.toElement.style.transform = "scale(1.3)"
+        },
+        dragover(e){
+          e.preventDefault();
+        },
+        drop(e){
+          console.log(e)
+          const cell = JSON.parse(e.dataTransfer.getData("cell"))
+          this.cells.push(cell)
+        },
+        tagmouseover(cell){
+          console.log(cell)
+          document.getElementById(cell.id).classList.add("drag")
+        },
+        tagmouseleave(cell){
+          document.getElementById(cell.id).classList.remove("drag")
+        }
+      }
+
+    }).$mount("#app")
+
+  </script>
+</body>
+
+</html>
